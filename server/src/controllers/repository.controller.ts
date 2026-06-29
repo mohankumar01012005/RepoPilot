@@ -4,6 +4,8 @@ import { AuthRequest } from "../middlewares/auth.middleware";
 import { getUserRepositories } from "../services/github.service";
 import { connectRepository } from "../services/repository.service";
 import getGitHubClient from "../services/githubClient.service";
+import { createGitHubWebhook } from "../services/webhook.service";
+import { updateWebhookId } from "../services/repository.service";
 export const getRepositories = async (
   req: AuthRequest,
   res: Response
@@ -54,21 +56,34 @@ export const connectUserRepository = async (
 
     const repository = response.data;
 
-    const connectedRepository =
-      await connectRepository({
-        githubRepoId: repository.id,
-        name: repository.name,
-        fullName: repository.full_name,
-        owner: repository.owner.login,
-        defaultBranch: repository.default_branch,
-        userId: req.userId!,
-      });
+   const connectedRepository =
+  await connectRepository({
+    githubRepoId: repository.id,
+    name: repository.name,
+    fullName: repository.full_name,
+    owner: repository.owner.login,
+    defaultBranch: repository.default_branch,
+    userId: req.userId!,
+  });
 
-    res.status(201).json({
-      success: true,
-      message: "Repository connected successfully.",
-      repository: connectedRepository,
-    });
+const webhook = await createGitHubWebhook({
+  owner,
+  repo,
+  userId: req.userId!,
+});
+
+const updatedRepository =
+  await updateWebhookId(
+    connectedRepository._id.toString(),
+    webhook.id
+  );
+
+res.status(201).json({
+  success: true,
+  message: "Repository connected successfully.",
+  repository: updatedRepository,
+  webhook,
+});
   } catch (error) {
     console.error(error);
 

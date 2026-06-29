@@ -30,3 +30,18 @@ export const connectRepository = async (
     user: data.userId,
   });
 };
+
+export const updateWebhookId = async (
+  repositoryId: string,
+  webhookId: number
+) => {
+  return Repository.findByIdAndUpdate(
+    repositoryId,
+    {
+      webhookId,
+    },
+    {
+      new: true,
+    }
+  );
+};
