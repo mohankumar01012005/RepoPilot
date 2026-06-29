@@ -1,1 +1,2 @@
 # RepoPilot
+# GitHub Automation Bot
