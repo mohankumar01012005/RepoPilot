@@ -23,3 +23,27 @@ export const addLabelsToIssue = async (
 
   return response.data;
 };
+
+interface CommentInput {
+  userId: string;
+  owner: string;
+  repo: string;
+  issueNumber: number;
+  body: string;
+}
+
+export const addCommentToIssue = async (
+  data: CommentInput
+) => {
+  const { octokit } = await getGitHubClient(data.userId);
+
+  const response =
+    await octokit.rest.issues.createComment({
+      owner: data.owner,
+      repo: data.repo,
+      issue_number: data.issueNumber,
+      body: data.body,
+    });
+
+  return response.data;
+};
