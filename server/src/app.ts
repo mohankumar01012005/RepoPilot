@@ -9,6 +9,7 @@ import userRoutes from "./routes/user.routes";
 import notFoundMiddleware from "./middlewares/notFound.middleware";
 import errorMiddleware from "./middlewares/error.middleware";
 import repositoryRoutes from "./routes/repository.routes";
+import webhookRoutes from "./routes/webhook.routes";
 const app: Application = express();
 
 app.use(
@@ -27,6 +28,7 @@ app.use("/api", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/repositories", repositoryRoutes);
+app.use("/api/webhooks", webhookRoutes);
 // 404 Middleware
 app.use(notFoundMiddleware);
 
