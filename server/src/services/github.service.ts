@@ -29,3 +29,21 @@ export const getGitHubUser = async (accessToken: string) => {
 
   return response.data;
 };
+
+export const getUserRepositories = async (accessToken: string) => {
+  const response = await axios.get(
+    "https://api.github.com/user/repos",
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/vnd.github+json",
+      },
+      params: {
+        sort: "updated",
+        per_page: 100,
+      },
+    }
+  );
+
+  return response.data;
+};
