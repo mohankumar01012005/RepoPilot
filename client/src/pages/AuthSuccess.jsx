@@ -12,7 +12,7 @@ function AuthSuccess() {
     const token = params.get("token");
 
     if (token) {
-      localStorage.setItem("token", token);
+      localStorage.setItem("authToken", token);
     }
 
     navigate("/dashboard");

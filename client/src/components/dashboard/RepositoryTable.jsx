@@ -5,38 +5,31 @@ import {
   PauseCircle,
 } from "lucide-react";
 
-const repositories = [
-  {
-    name: "RepoPilot",
-    branch: "main",
-    status: "Active",
-    lastActivity: "2 min ago",
-    active: true,
-  },
-  {
-    name: "AeroFlow",
-    branch: "main",
-    status: "Active",
-    lastActivity: "15 min ago",
-    active: true,
-  },
-  {
-    name: "CareerCraft",
-    branch: "develop",
-    status: "Paused",
-    lastActivity: "Yesterday",
-    active: false,
-  },
-  {
-    name: "CloudSave",
-    branch: "main",
-    status: "Active",
-    lastActivity: "1 hour ago",
-    active: true,
-  },
-];
+import { useDashboardRepositories } from "../../hooks/useDashboard";
 
 function RepositoryTable() {
+  const {
+  data: repositories,
+  isLoading,
+  error,
+} = useDashboardRepositories();
+
+  if (isLoading) {
+    return (
+      <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 text-center">
+        Loading repositories...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-6 text-center text-red-600">
+        Failed to load repositories.
+      </div>
+    );
+  }
+
   return (
     <section className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="mb-6 flex items-center justify-between">
@@ -74,11 +67,15 @@ function RepositoryTable() {
               </th>
 
               <th className="pb-4 font-semibold">
-                Last Activity
+                Events
               </th>
 
-              <th className="pb-4 font-semibold text-right">
-                Action
+              <th className="pb-4 font-semibold">
+                Actions
+              </th>
+
+              <th className="pb-4 text-right font-semibold">
+                Open
               </th>
 
             </tr>
@@ -86,18 +83,21 @@ function RepositoryTable() {
 
           <tbody>
 
-            {repositories.map((repo) => (
+            {repositories?.map((repo) => (
               <tr
-                key={repo.name}
+                key={repo._id}
                 className="border-b border-gray-100 hover:bg-gray-50"
               >
-
                 <td className="py-5">
-
                   <div className="flex items-center gap-3">
 
-                    <div className="rounded-lg bg-blue-50 p-2 text-blue-600">
-                      <FolderGit2 size={20} />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
+
+                      <FolderGit2
+                        size={20}
+                        className="text-blue-600"
+                      />
+
                     </div>
 
                     <div>
@@ -106,50 +106,60 @@ function RepositoryTable() {
                         {repo.name}
                       </p>
 
-                      <p className="text-sm text-gray-500">
-                        github.com/mohankumar01012005/{repo.name}
+                      <p className="text-xs text-gray-500">
+                        {repo.fullName}
                       </p>
 
                     </div>
 
                   </div>
-
-                </td>
-
-                <td className="font-medium">
-                  {repo.branch}
                 </td>
 
                 <td>
-
-                  {repo.active ? (
-                    <span className="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-                      <CheckCircle2 size={16} />
-                      {repo.status}
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700">
-                      <PauseCircle size={16} />
-                      {repo.status}
-                    </span>
-                  )}
-
+                  {repo.defaultBranch}
                 </td>
 
-                <td className="text-gray-500">
-                  {repo.lastActivity}
+                <td>
+                  <span
+                    className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${
+                      repo.isActive
+                        ? "bg-green-100 text-green-700"
+                        : "bg-orange-100 text-orange-700"
+                    }`}
+                  >
+                    {repo.isActive ? (
+                      <CheckCircle2 size={16} />
+                    ) : (
+                      <PauseCircle size={16} />
+                    )}
+
+                    {repo.isActive
+                      ? "Active"
+                      : "Paused"}
+                  </span>
+                </td>
+
+                <td>
+                  {repo.events}
+                </td>
+
+                <td>
+                  {repo.actions}
                 </td>
 
                 <td className="text-right">
-
-                  <button className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 transition hover:bg-gray-100">
-
+                  <a
+                    href={`https://github.com/${repo.fullName}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 hover:bg-gray-100"
+                  >
                     Open
 
-                    <ExternalLink size={16} />
-
-                  </button>
-
+                    <ExternalLink
+                      size={16}
+                    />
+                  </a>
                 </td>
 
               </tr>

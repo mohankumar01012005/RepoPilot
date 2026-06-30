@@ -3,27 +3,50 @@ import {
   CheckCircle2,
   Loader2,
 } from "lucide-react";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+
+import { useConnectRepository } from "../../hooks/useRepositories";
 
 function RepositoryItem({
   repository,
   connected = false,
 }) {
-  const [loading, setLoading] =
-    useState(false);
+  const mutation = useConnectRepository();
 
   const [isConnected, setIsConnected] =
     useState(connected);
 
+  useEffect(() => {
+    setIsConnected(connected);
+  }, [connected]);
+
   const connectRepo = () => {
     if (isConnected) return;
 
-    setLoading(true);
+    mutation.mutate(
+      {
+        owner: repository.owner.login,
+        repo: repository.name,
+      },
+      {
+        onSuccess: () => {
+          setIsConnected(true);
 
-    setTimeout(() => {
-      setLoading(false);
-      setIsConnected(true);
-    }, 1200);
+          toast.success(
+            "Repository connected successfully."
+          );
+        },
+
+        onError: (error) => {
+          toast.error(
+            error?.response?.data?.message ??
+              "Failed to connect repository."
+          );
+        },
+      }
+    );
   };
 
   return (
@@ -35,12 +58,15 @@ function RepositoryItem({
       }`}
     >
       <div className="flex items-center gap-4">
+
         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gray-100">
           <FolderGit2 size={22} />
         </div>
 
         <div>
+
           <div className="flex items-center gap-3">
+
             <h3 className="font-semibold">
               {repository.name}
             </h3>
@@ -56,12 +82,15 @@ function RepositoryItem({
                 ? "Private"
                 : "Public"}
             </span>
+
           </div>
 
           <p className="mt-1 text-sm text-gray-500">
-            Updated {repository.updated}
+            {repository.full_name}
           </p>
+
         </div>
+
       </div>
 
       {isConnected ? (
@@ -72,9 +101,10 @@ function RepositoryItem({
       ) : (
         <button
           onClick={connectRepo}
-          className="rounded-lg bg-black px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+          disabled={mutation.isPending}
+          className="rounded-lg bg-black px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {loading ? (
+          {mutation.isPending ? (
             <Loader2
               size={18}
               className="animate-spin"
@@ -84,6 +114,7 @@ function RepositoryItem({
           )}
         </button>
       )}
+
     </div>
   );
 }

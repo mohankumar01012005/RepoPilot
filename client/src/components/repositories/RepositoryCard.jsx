@@ -1,33 +1,28 @@
 import {
-  Code2,
-  Terminal,
-  Database,
+  FolderGit2,
   MoreHorizontal,
   CheckCircle2,
   AlertTriangle,
-  Users,
-  ArrowRight,
-  Settings,
+  Activity,
+  GitBranch,
+  ExternalLink,
 } from "lucide-react";
 
-const ICONS = {
-  code: Code2,
-  terminal: Terminal,
-  database: Database,
-};
-
 function RepositoryCard({ repository }) {
-  const Icon = ICONS[repository.icon];
-
   return (
     <div className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+
+      {/* Header */}
 
       <div className="mb-6 flex items-start justify-between">
 
         <div className="flex items-center gap-4">
 
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-gray-200 bg-gray-100">
-            <Icon size={26} />
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-gray-200 bg-blue-50">
+            <FolderGit2
+              size={26}
+              className="text-blue-600"
+            />
           </div>
 
           <div>
@@ -36,23 +31,9 @@ function RepositoryCard({ repository }) {
               {repository.name}
             </h3>
 
-            <div className="mt-2 flex items-center gap-3">
-
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                  repository.private
-                    ? "bg-gray-200 text-gray-700"
-                    : "bg-blue-100 text-blue-700"
-                }`}
-              >
-                {repository.private ? "Private" : "Public"}
-              </span>
-
-              <span className="text-sm text-gray-500">
-                Updated {repository.updated}
-              </span>
-
-            </div>
+            <p className="mt-1 text-sm text-gray-500">
+              {repository.fullName}
+            </p>
 
           </div>
 
@@ -64,13 +45,17 @@ function RepositoryCard({ repository }) {
 
       </div>
 
+      {/* Information */}
+
       <div className="space-y-4">
+
+        {/* Webhook */}
 
         <div className="flex items-center justify-between border-b border-gray-100 pb-3">
 
           <div className="flex items-center gap-2">
 
-            {repository.healthy ? (
+            {repository.webhookId ? (
               <CheckCircle2
                 size={18}
                 className="text-green-600"
@@ -90,66 +75,100 @@ function RepositoryCard({ repository }) {
 
           <span
             className={`font-semibold ${
-              repository.healthy
+              repository.webhookId
                 ? "text-green-600"
                 : "text-red-600"
             }`}
           >
-            {repository.webhook}
+            {repository.webhookId
+              ? "Configured"
+              : "Missing"}
           </span>
 
         </div>
 
+        {/* Branch */}
+
+        <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+
+          <div className="flex items-center gap-2">
+
+            <GitBranch
+              size={18}
+              className="text-gray-600"
+            />
+
+            <span className="text-gray-600">
+              Branch
+            </span>
+
+          </div>
+
+          <span className="font-semibold">
+            {repository.defaultBranch}
+          </span>
+
+        </div>
+
+        {/* Events */}
+
         <div className="flex items-center justify-between border-b border-gray-100 pb-3">
 
           <span className="text-gray-600">
-            Automation Rules
+            Events Received
           </span>
 
           <span className="font-semibold">
-            {repository.rules}
+            {repository.events}
+          </span>
+
+        </div>
+
+        {/* Actions */}
+
+        <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+
+          <span className="text-gray-600">
+            Actions Executed
+          </span>
+
+          <span className="font-semibold">
+            {repository.actions}
           </span>
 
         </div>
 
       </div>
 
-      <div className="mt-6 flex items-center">
+      {/* Footer */}
 
-        <div className="flex items-center gap-2">
+      <div className="mt-6 flex items-center justify-between">
 
-          <Users
-            size={18}
-            className="text-gray-500"
-          />
+        <span
+          className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${
+            repository.isActive
+              ? "bg-green-100 text-green-700"
+              : "bg-orange-100 text-orange-700"
+          }`}
+        >
+          <Activity size={16} />
 
-          <span className="text-sm text-gray-500">
-            {repository.members}
-          </span>
+          {repository.isActive
+            ? "Active"
+            : "Paused"}
 
-        </div>
+        </span>
 
-        <div className="ml-auto">
+        <a
+          href={`https://github.com/${repository.fullName}`}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold transition hover:bg-gray-100"
+        >
+          Open Repo
 
-          {repository.healthy ? (
-            <button className="flex items-center gap-2 text-sm font-semibold hover:underline">
-
-              View Logs
-
-              <ArrowRight size={16} />
-
-            </button>
-          ) : (
-            <button className="flex items-center gap-2 rounded-lg bg-red-100 px-4 py-2 text-sm font-semibold text-red-700">
-
-              <Settings size={16} />
-
-              Fix Webhook
-
-            </button>
-          )}
-
-        </div>
+          <ExternalLink size={16} />
+        </a>
 
       </div>
 

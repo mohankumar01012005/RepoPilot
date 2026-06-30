@@ -1,15 +1,33 @@
-import { Workflow, CheckCircle2 } from "lucide-react";
+import {
+  Workflow,
+  CheckCircle2,
+  
+} from "lucide-react";
+
+import {
+  useCurrentUser,
+} from "../../hooks/useAuth";
 
 function GitHubIntegration() {
+  const {
+    data: user,
+    isLoading,
+  } = useCurrentUser();
+
+  if (isLoading) return null;
+
   return (
     <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+
       <div className="flex items-center justify-between">
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
 
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
-            <Workflow size={24} />
-          </div>
+          <img
+            src={user.avatarUrl}
+            alt=""
+            className="h-14 w-14 rounded-full"
+          />
 
           <div>
 
@@ -18,11 +36,11 @@ function GitHubIntegration() {
             </h2>
 
             <p className="mt-1 text-gray-500">
-              Connected to
-              {" "}
-              <span className="font-semibold">
-                mohankumar01012005
-              </span>
+              @{user.username}
+            </p>
+
+            <p className="text-sm text-gray-400">
+              {user.email}
             </p>
 
           </div>
@@ -33,23 +51,40 @@ function GitHubIntegration() {
 
           <CheckCircle2 size={16} />
 
-          Active
+          Connected
 
         </span>
 
       </div>
 
-      <div className="mt-6 flex gap-4">
+      <div className="mt-8 grid grid-cols-2 gap-6">
 
-        <button className="rounded-lg border border-gray-200 px-5 py-2 hover:bg-gray-100">
-          Manage Access
-        </button>
+        <div className="rounded-xl bg-gray-50 p-5">
 
-        <button className="rounded-lg text-red-600 hover:underline">
-          Disconnect
-        </button>
+          <p className="text-sm text-gray-500">
+            Connected Repositories
+          </p>
+
+          <h2 className="mt-2 text-3xl font-black">
+            {user.repositories}
+          </h2>
+
+        </div>
+
+        <div className="rounded-xl bg-gray-50 p-5">
+
+          <p className="text-sm text-gray-500">
+            GitHub Username
+          </p>
+
+          <h2 className="mt-2 text-xl font-bold">
+            {user.username}
+          </h2>
+
+        </div>
 
       </div>
+
     </section>
   );
 }

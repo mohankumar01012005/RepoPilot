@@ -23,11 +23,7 @@ function Sidebar() {
   icon: <FolderGit2 size={20} />,
   path: "/repositories",
 },
-{
-  title: "Rules",
-  icon: <Workflow size={20} />,
-  path: "/rules",
-},
+
 {
   title: "Activity",
   icon: <History size={20} />,
@@ -86,11 +82,7 @@ function Sidebar() {
       </div>
 
       <div className="border-t border-gray-200 p-4">
-        <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-black py-3 font-medium text-white transition hover:opacity-90">
-          <Plus size={18} />
-
-          Create Rule
-        </button>
+       
       </div>
     </aside>
   );

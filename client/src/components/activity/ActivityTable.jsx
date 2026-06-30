@@ -1,73 +1,33 @@
 import ActivityRow from "./ActivityRow";
-
-const activities = [
-  {
-    id: 1,
-    event: "Issue Opened",
-    repository: "RepoPilot",
-    action: "ADD_LABEL",
-    status: "SUCCESS",
-    time: "2 min ago",
-  },
-  {
-    id: 2,
-    event: "Issue Opened",
-    repository: "RepoPilot",
-    action: "ADD_COMMENT",
-    status: "SUCCESS",
-    time: "2 min ago",
-  },
-  {
-    id: 3,
-    event: "Issue Opened",
-    repository: "RepoPilot",
-    action: "SLACK_NOTIFICATION",
-    status: "SUCCESS",
-    time: "3 min ago",
-  },
-  {
-    id: 4,
-    event: "Pull Request",
-    repository: "AeroFlow",
-    action: "ADD_LABEL",
-    status: "SUCCESS",
-    time: "18 min ago",
-  },
-  {
-    id: 5,
-    event: "Push",
-    repository: "CareerCraft",
-    action: "NO_RULE_MATCHED",
-    status: "FAILED",
-    time: "41 min ago",
-  },
-  {
-    id: 6,
-    event: "Issue Opened",
-    repository: "CloudSave",
-    action: "ADD_COMMENT",
-    status: "SUCCESS",
-    time: "1 hour ago",
-  },
-  {
-    id: 7,
-    event: "Push",
-    repository: "RepoPilot",
-    action: "SLACK_NOTIFICATION",
-    status: "SUCCESS",
-    time: "2 hours ago",
-  },
-  {
-    id: 8,
-    event: "Pull Request",
-    repository: "AeroFlow",
-    action: "ADD_LABEL",
-    status: "SUCCESS",
-    time: "3 hours ago",
-  },
-];
+import { useDashboardActions } from "../../hooks/useDashboard";
 
 function ActivityTable() {
+  const {
+    data: activities,
+    isLoading,
+    error,
+  } = useDashboardActions();
+
+  if (isLoading) {
+    return (
+      <section className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+        <p className="text-center text-gray-500">
+          Loading activities...
+        </p>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="rounded-2xl border border-red-200 bg-white p-8 shadow-sm">
+        <p className="text-center text-red-500">
+          Failed to load activities.
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
 
@@ -92,11 +52,11 @@ function ActivityTable() {
             <tr>
 
               <th className="px-6 py-4 text-left">
-                Event
+                Action
               </th>
 
               <th className="px-6 py-4 text-left">
-                Action
+                Details
               </th>
 
               <th className="px-6 py-4 text-left">
@@ -115,9 +75,9 @@ function ActivityTable() {
 
           <tbody>
 
-            {activities.map((activity) => (
+            {activities?.map((activity) => (
               <ActivityRow
-                key={activity.id}
+                key={activity._id}
                 activity={activity}
               />
             ))}
@@ -131,28 +91,8 @@ function ActivityTable() {
       <div className="flex items-center justify-between border-t border-gray-200 px-6 py-5">
 
         <p className="text-sm text-gray-500">
-          Showing 8 activities
+          Showing {activities?.length ?? 0} activities
         </p>
-
-        <div className="flex gap-2">
-
-          <button className="rounded-lg border border-gray-200 px-4 py-2 hover:bg-gray-100">
-            Previous
-          </button>
-
-          <button className="rounded-lg bg-black px-4 py-2 text-white">
-            1
-          </button>
-
-          <button className="rounded-lg border border-gray-200 px-4 py-2 hover:bg-gray-100">
-            2
-          </button>
-
-          <button className="rounded-lg border border-gray-200 px-4 py-2 hover:bg-gray-100">
-            Next
-          </button>
-
-        </div>
 
       </div>
 

@@ -7,41 +7,66 @@ import {
   MessageSquare,
   GitPullRequest,
 } from "lucide-react";
+import {
+  useDashboardActions,
+} from "../../hooks/useDashboard";
 
-const activities = [
-  {
-    icon: <Tag size={18} />,
-    title: "Bug label added",
-    time: "2 min ago",
-    color: "bg-blue-100 text-blue-600",
-  },
-  {
-    icon: <MessageSquare size={18} />,
-    title: "Welcome comment posted",
-    time: "5 min ago",
-    color: "bg-green-100 text-green-600",
-  },
-  {
-    icon: <Bell size={18} />,
-    title: "Slack notification sent",
-    time: "8 min ago",
-    color: "bg-orange-100 text-orange-600",
-  },
-  {
-    icon: <GitPullRequest size={18} />,
-    title: "Pull Request detected",
-    time: "20 min ago",
-    color: "bg-purple-100 text-purple-600",
-  },
-];
 
 function AISummary() {
+  const {
+  data: actions,
+  isLoading,
+} = useDashboardActions();
+
+const getIcon = (type) => {
+  switch (type) {
+    case "ADD_LABEL":
+      return (
+        <Tag
+          size={18}
+          className="text-blue-600"
+        />
+      );
+
+    case "ADD_COMMENT":
+      return (
+        <MessageSquare
+          size={18}
+          className="text-green-600"
+        />
+      );
+
+    case "SLACK_NOTIFICATION":
+      return (
+        <Bell
+          size={18}
+          className="text-orange-600"
+        />
+      );
+
+    case "PULL_REQUEST":
+      return (
+        <GitPullRequest
+          size={18}
+          className="text-purple-600"
+        />
+      );
+
+    default:
+      return (
+        <Sparkles
+          size={18}
+          className="text-gray-600"
+        />
+      );
+  }
+};
   return (
     <section className="mt-8 grid gap-6 xl:grid-cols-3">
 
       {/* AI Summary */}
 
-      <div className="xl:col-span-1 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-600 to-indigo-700 p-6 text-white shadow-lg">
+      <div className="xl:col-span-1 rounded-2xl border border-blue-200 bg-linear-to-br from-blue-600 to-indigo-700 p-6 text-white shadow-lg">
 
         <div className="flex items-center gap-3">
 
@@ -123,42 +148,42 @@ function AISummary() {
 
         <div className="space-y-5">
 
-          {activities.map((item) => (
+          {actions?.slice(0, 4).map((item) => (
             <div
-              key={item.title}
+              key={item._id}
               className="flex items-center justify-between rounded-xl border border-gray-100 p-4 transition hover:bg-gray-50"
             >
 
               <div className="flex items-center gap-4">
 
-                <div
-                  className={`rounded-xl p-3 ${item.color}`}
-                >
-                  {item.icon}
-                </div>
+                <div className="rounded-xl bg-gray-100 p-3">
+  {getIcon(item.actionType)}
+</div>
 
                 <div>
 
                   <h3 className="font-semibold">
-                    {item.title}
+                    {item.details}
                   </h3>
 
                   <p className="text-sm text-gray-500">
-                    {item.time}
+                    {item.actionType.replaceAll("_", " ")}
                   </p>
 
                 </div>
 
               </div>
 
-              <span className="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-
+             <span
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${
+                  item.status === "SUCCESS"
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
                 <CheckCircle2 size={16} />
-
-                Success
-
+                {item.status}
               </span>
-
             </div>
           ))}
 

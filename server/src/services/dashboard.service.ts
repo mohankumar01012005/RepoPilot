@@ -148,7 +148,7 @@ export const getDashboardRepositories =
       await Repository.find({
         user: userId,
       }).select(
-        "name fullName defaultBranch isActive"
+        "name fullName defaultBranch isActive webhookId"
       );
 
     const result = [];
