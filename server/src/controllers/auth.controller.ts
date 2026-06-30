@@ -1,10 +1,17 @@
 import { Request, Response } from "express";
+import protect, {
+  AuthRequest,
+} from "../middlewares/auth.middleware";
+
+import User from "../models/user.model";
+import Repository from "../models/repository.model";
 import { getGitHubAccessToken } from "../services/github.service";
 import {
   getGitHubUser,
 } from "../services/github.service";
 import { saveGitHubUser } from "../services/user.service";
 import generateToken from "../utils/generateToken";
+
 export const githubLogin = (
   req: Request,
   res: Response
@@ -50,7 +57,7 @@ const user = await saveGitHubUser(
 const token = generateToken(user.id);
 
 res.redirect(
-`${process.env.CLIENT_URL}/dashboard?token=${token}`
+  `${process.env.CLIENT_URL}/auth/success?token=${token}`
 );
   } catch (error) {
     console.error(error);
@@ -58,6 +65,45 @@ res.redirect(
     res.status(500).json({
       success: false,
       message: "GitHub authentication failed.",
+    });
+  }
+};
+
+export const getMe = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const user = await User.findById(req.userId).select(
+      "name username email avatarUrl"
+    );
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+      return;
+    }
+
+    const repositories =
+      await Repository.countDocuments({
+        user: req.userId,
+      });
+
+    res.status(200).json({
+      success: true,
+      user: {
+        ...user.toObject(),
+        repositories,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch profile.",
     });
   }
 };

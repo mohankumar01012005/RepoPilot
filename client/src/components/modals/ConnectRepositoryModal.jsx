@@ -4,42 +4,52 @@ import {
   Info,
 } from "lucide-react";
 
+import { useMemo, useState } from "react";
+
 import RepositoryItem from "./RepositoryItem";
 
-const repositories = [
-  {
-    name: "RepoPilot",
-    private: false,
-    updated: "2 hours ago",
-    connected: true,
-  },
-  {
-    name: "CareerCraft",
-    private: true,
-    updated: "1 day ago",
-  },
-  {
-    name: "CloudSave",
-    private: true,
-    updated: "3 days ago",
-  },
-  {
-    name: "Fitmas",
-    private: false,
-    updated: "1 week ago",
-  },
-];
+import { useRepositories } from "../../hooks/useRepositories";
+import { useDashboardRepositories } from "../../hooks/useDashboard";
 
 function ConnectRepositoryModal({
   open,
   onClose,
 }) {
-  if (!open) return null;
+  const [search, setSearch] = useState("");
 
+  const {
+    data: githubRepositories = [],
+    isLoading,
+    error,
+  } = useRepositories();
+
+  const {
+    data: connectedRepositories = [],
+  } = useDashboardRepositories();
+
+  
+
+  const connectedNames = useMemo(() => {
+    return new Set(
+      connectedRepositories.map(
+        (repo) => repo.fullName
+      )
+    );
+  }, [connectedRepositories]);
+
+  const filteredRepositories =
+    githubRepositories.filter((repo) =>
+      repo.full_name
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    );
+if (!open) return null;
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-5">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-5 backdrop-blur-sm">
 
-      <div className="w-full max-w-2xl rounded-3xl bg-white shadow-2xl">
+      <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl">
+
+        {/* Header */}
 
         <div className="border-b border-gray-200 p-7">
 
@@ -52,8 +62,7 @@ function ConnectRepositoryModal({
               </h2>
 
               <p className="mt-2 text-gray-500">
-                Select a GitHub repository to
-                automate.
+                Select one of your GitHub repositories.
               </p>
 
             </div>
@@ -67,23 +76,11 @@ function ConnectRepositoryModal({
 
           </div>
 
-          <div className="mt-6 flex items-center gap-3">
-
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-sm font-bold text-white">
-              1
-            </div>
-
-            <div className="h-[2px] flex-1 bg-gray-200"></div>
-
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-bold">
-              2
-            </div>
-
-          </div>
-
         </div>
 
-        <div className="space-y-6 p-7">
+        {/* Search */}
+
+        <div className="border-b border-gray-200 p-7">
 
           <div className="relative">
 
@@ -93,23 +90,50 @@ function ConnectRepositoryModal({
             />
 
             <input
+              value={search}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
               placeholder="Search repositories..."
               className="w-full rounded-xl border border-gray-200 py-3 pl-11 pr-4 outline-none focus:border-black"
             />
 
           </div>
 
-          <div className="max-h-[350px] space-y-4 overflow-y-auto pr-2">
+        </div>
 
-            {repositories.map((repo) => (
+        {/* Repository List */}
+
+        <div className="flex-1 space-y-4 overflow-y-auto p-7">
+
+          {isLoading && (
+            <p className="py-10 text-center text-gray-500">
+              Loading repositories...
+            </p>
+          )}
+
+          {error && (
+            <p className="py-10 text-center text-red-500">
+              Failed to load repositories.
+            </p>
+          )}
+
+          {!isLoading &&
+            filteredRepositories.map((repo) => (
               <RepositoryItem
-                key={repo.name}
+                key={repo.id}
                 repository={repo}
-                connected={repo.connected}
+                connected={connectedNames.has(
+                  repo.full_name
+                )}
               />
             ))}
 
-          </div>
+        </div>
+
+        {/* Info */}
+
+        <div className="border-t border-gray-200 bg-gray-50 px-7 pt-5">
 
           <div className="flex gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
 
@@ -119,17 +143,19 @@ function ConnectRepositoryModal({
             />
 
             <p className="text-sm text-blue-700">
-              Can't find your repository?
-              Ensure RepoPilot has permission
-              to access it from your GitHub
-              account settings.
+              After connecting a repository,
+              RepoPilot automatically creates a
+              GitHub webhook and starts monitoring
+              events immediately.
             </p>
 
           </div>
 
         </div>
 
-        <div className="flex items-center justify-between rounded-b-3xl border-t border-gray-200 bg-gray-50 px-7 py-5">
+        {/* Footer */}
+
+        <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-7 py-5">
 
           <button className="text-sm font-semibold text-gray-500 hover:text-black">
             How it works
@@ -139,16 +165,9 @@ function ConnectRepositoryModal({
 
             <button
               onClick={onClose}
-              className="rounded-xl border border-gray-300 px-5 py-2 font-semibold"
+              className="rounded-xl border border-gray-300 px-5 py-2 font-semibold hover:bg-gray-100"
             >
-              Cancel
-            </button>
-
-            <button
-              disabled
-              className="cursor-not-allowed rounded-xl bg-black px-6 py-2 font-semibold text-white opacity-40"
-            >
-              Next
+              Close
             </button>
 
           </div>

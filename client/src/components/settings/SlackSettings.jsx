@@ -1,40 +1,67 @@
-import { Bell } from "lucide-react";
+import {
+  Bell,
+  CheckCircle2,
+} from "lucide-react";
 
 function SlackSettings() {
+  const configured =
+    true;
+
   return (
     <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
 
-      <div className="mb-6 flex items-center gap-4">
+      <div className="flex items-center justify-between">
 
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
-          <Bell size={22} />
+        <div className="flex items-center gap-4">
+
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
+
+            <Bell size={22} />
+
+          </div>
+
+          <div>
+
+            <h2 className="text-2xl font-bold">
+              Slack Integration
+            </h2>
+
+            <p className="mt-1 text-gray-500">
+              Automation notifications
+            </p>
+
+          </div>
+
         </div>
 
-        <h2 className="text-2xl font-bold">
-          Slack Webhook
-        </h2>
+        {configured ? (
+          <span className="inline-flex items-center gap-2 rounded-full bg-green-100 px-4 py-2 font-semibold text-green-700">
+
+            <CheckCircle2 size={16} />
+
+            Connected
+
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-2 rounded-full bg-red-100 px-4 py-2 font-semibold text-red-700">
+
+            Not Configured
+
+          </span>
+        )}
 
       </div>
 
-      <label className="mb-2 block font-semibold">
-        Webhook URL
-      </label>
+      <div className="mt-8 rounded-xl bg-gray-50 p-5">
 
-      <input
-        type="text"
-        placeholder="https://hooks.slack.com/services/..."
-        className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-black"
-      />
+        <p className="text-gray-600">
 
-      <p className="mt-3 text-sm text-gray-500">
-        RepoPilot will send automation notifications to this Slack channel.
-      </p>
+          RepoPilot automatically sends webhook
+          notifications to your configured Slack
+          channel whenever automation rules are
+          executed successfully.
 
-      <div className="mt-6 flex justify-end">
-
-        <button className="rounded-xl bg-black px-6 py-3 text-white">
-          Save Webhook
-        </button>
+        </p>
 
       </div>
 

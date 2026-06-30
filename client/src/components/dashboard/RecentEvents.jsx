@@ -5,7 +5,7 @@ import {
   GitCommit,
   Clock3,
 } from "lucide-react";
-
+import { useDashboardEvents } from "../../hooks/useDashboard";
 const events = [
   {
     id: 1,
@@ -46,6 +46,11 @@ const events = [
 ];
 
 function RecentEvents() {
+  const {
+  data: events,
+  isLoading,
+  error,
+} = useDashboardEvents();
   return (
     <section className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
 
@@ -71,56 +76,36 @@ function RecentEvents() {
 
       <div className="space-y-5">
 
-        {events.map((event) => (
-          <div
-            key={event.id}
-            className="flex items-center justify-between rounded-xl border border-gray-100 p-5 transition hover:bg-gray-50"
-          >
+       {events?.map((event) => (
+  <div
+    key={event._id}
+    className="flex items-center justify-between rounded-xl border border-gray-100 p-4 hover:bg-gray-50"
+  >
+    <div>
+      <h3 className="font-semibold">
+        {event.githubEvent}
+      </h3>
 
-            <div className="flex items-center gap-4">
+      <p className="text-sm text-gray-500">
+        {event.action}
+      </p>
 
-              <div
-                className={`rounded-xl p-3 ${event.color}`}
-              >
-                {event.icon}
-              </div>
+      <p className="mt-1 text-xs text-gray-400">
+        {new Date(event.createdAt).toLocaleString()}
+      </p>
+    </div>
 
-              <div>
-
-                <h3 className="font-semibold">
-                  {event.event}
-                </h3>
-
-                <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
-
-                  <Workflow size={14} />
-
-                  {event.repository}
-
-                </div>
-
-              </div>
-
-            </div>
-
-            <div className="flex items-center gap-8">
-
-              <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-                {event.status}
-              </span>
-
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-
-                <Clock3 size={15} />
-
-                {event.time}
-
-              </div>
-
-            </div>
-
-          </div>
-        ))}
+    <span
+      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+        event.processed
+          ? "bg-green-100 text-green-700"
+          : "bg-yellow-100 text-yellow-700"
+      }`}
+    >
+      {event.processed ? "Processed" : "Pending"}
+    </span>
+  </div>
+))}
 
       </div>
 

@@ -23,12 +23,8 @@ function ActivityRow({ activity }) {
           <div>
 
             <h3 className="font-semibold">
-              {activity.event}
+              {activity.actionType}
             </h3>
-
-            <p className="text-sm text-gray-500">
-              {activity.repository}
-            </p>
 
           </div>
 
@@ -40,7 +36,7 @@ function ActivityRow({ activity }) {
 
         <span className="rounded-lg bg-blue-100 px-3 py-2 text-sm font-semibold text-blue-700">
 
-          {activity.action}
+          {activity.details}
 
         </span>
 
@@ -74,7 +70,9 @@ function ActivityRow({ activity }) {
 
           <Clock3 size={16} />
 
-          {activity.time}
+          {new Date(
+            activity.createdAt
+          ).toLocaleString()}
 
         </div>
 
