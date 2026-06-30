@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { loginWithGithub } from "../services/authService";
 function Hero() {
   const navigate = useNavigate();
   return (
@@ -93,7 +94,7 @@ function Hero() {
             hover:bg-gray-900
             "
 
-            onClick={() => navigate("/dashboard")}
+            onClick={loginWithGithub}
           >
             Sign in with GitHub
           </button>

@@ -5,14 +5,18 @@ import {
 } from "../services/github.service";
 import { saveGitHubUser } from "../services/user.service";
 import generateToken from "../utils/generateToken";
-export const githubLogin = (req: Request, res: Response): void => {
+export const githubLogin = (
+  req: Request,
+  res: Response
+): void => {
   const params = new URLSearchParams({
     client_id: process.env.GITHUB_CLIENT_ID!,
     redirect_uri: process.env.GITHUB_CALLBACK_URL!,
     scope: "read:user user:email repo",
   });
 
-  const githubAuthURL = `https://github.com/login/oauth/authorize?${params.toString()}`;
+  const githubAuthURL =
+    `https://github.com/login/oauth/authorize?${params.toString()}`;
 
   res.redirect(githubAuthURL);
 };
@@ -45,19 +49,9 @@ const user = await saveGitHubUser(
 
 const token = generateToken(user.id);
 
-   res.status(200).json({
-  success: true,
-  message: "Login Successful",
-  token,
-  user: {
-    id: user.id,
-    githubId: user.githubId,
-    username: user.username,
-    name: user.name,
-    email: user.email,
-    avatarUrl: user.avatarUrl,
-  },
-});
+res.redirect(
+`${process.env.CLIENT_URL}/dashboard?token=${token}`
+);
   } catch (error) {
     console.error(error);
 
